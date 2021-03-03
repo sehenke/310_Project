@@ -15,6 +15,14 @@ import javafx.scene.text.Text;
 
 
 public class UI extends Application {
+	private double WIDTH = 400, HEIGHT = 425;
+	private VBox app;
+	private HBox userspace;
+	private ScrollPane textwindow;
+	private Text text;
+	private TextField textfield;
+	private Button send;
+	private ChatBot cb;
 	
 	@Override
 	public void init() throws Exception{
@@ -22,42 +30,45 @@ public class UI extends Application {
 	}
 	
 	@Override
-	public void start(Stage primaryStage){
+	public void start(Stage stage){
 		try {
-			ChatBot cb = new ChatBot("Mitch");
-			Text textarea = new Text();
-			textarea.setWrappingWidth(400);
-			TextField textfield = new TextField();
-			textfield.setPrefWidth(300);
-			
-			Button send = new Button("Send");
+			cb = new ChatBot("Mitch");
+			text = new Text();
+			textwindow = new ScrollPane();
+			textfield = new TextField();
+			textfield.setPrefWidth(0.75*WIDTH);
+			send = new Button("Send");
 			send.setDefaultButton(true);
-			send.setPrefWidth(100);
+			send.setPrefWidth(0.25*WIDTH);
 			send.setOnAction(enter -> {
 				System.out.println(textfield.getText());
-				textarea.setText(textarea.getText() + "User: " + textfield.getText() + "\n");
+				textarea.setText(text.getText() + "User: " + textfield.getText() + "\n");
 				System.out.println(textfield.getText());
 				if(textfield.getText().contains("bye".toLowerCase()))
 					System.exit(0);
-				textarea.setText(textarea.getText() + "Bot: " + cb.sendPhrase(textfield.getText()) + "\n");
+				textarea.setText(text.getText() + "Bot: " + cb.sendPhrase(textfield.getText()) + "\n");
 				textfield.setText("");
 			});
 			
-			ScrollPane p = new ScrollPane();
-			p.setPrefSize(400, 400);
-			p.setMaxSize(400, 400);
-			p.setContent(textarea);
-			HBox h = new HBox(textfield,send);
-			h.setPrefSize(400, 25);
-			h.setMaxSize(400, 25);
-			VBox box = new VBox(p,h);
-			Scene scene = new Scene(box,400,425);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			userspace = new HBox(textfield,send);
+			userspace.setPrefSize(WIDTH, 25);
+			textwindow.setPrefSize(WIDTH, HEIGHT-userspace.getHeight());
+			textwindow.setContent(text);
+			app = new VBox(textwindow,userspace);
+			Scene scene = new Scene(app,WIDTH,HEIGHT);
 			
-			primaryStage.setScene(scene);
-			primaryStage.setTitle("Chatbot");
-			primaryStage.initStyle(StageStyle.UTILITY);
-			primaryStage.show();
+			stage.setScene(scene);
+			stage.setTitle("Chatbot");
+			stage.initStyle(StageStyle.UTILITY);
+			stage.show();
+			stage.widthProperty().addListener((obs) -> {
+				userspace.setPrefWidth(stage.getWidth());
+				textfield.setPrefWidth(0.75*stage.getWidth());
+				send.setPrefWidth(0.25*stage.getWidth());
+			});
+			stage.heightProperty().addListener((obs) -> {
+				textwindow.setPrefHeight(stage.getHeight()-userspace.getHeight());
+			});
 			
 		} catch(Exception e) {
 			e.printStackTrace();
