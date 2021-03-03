@@ -42,11 +42,11 @@ public class UI extends Application {
 			send.setPrefWidth(0.25*WIDTH);
 			send.setOnAction(enter -> {
 				System.out.println(textfield.getText());
-				textarea.setText(text.getText() + "User: " + textfield.getText() + "\n");
+				text.setText(text.getText() + "User: " + textfield.getText() + "\n");
 				System.out.println(textfield.getText());
 				if(textfield.getText().contains("bye".toLowerCase()))
 					System.exit(0);
-				textarea.setText(text.getText() + "Bot: " + cb.sendPhrase(textfield.getText()) + "\n");
+				text.setText(text.getText() + "Bot: " + cb.sendPhrase(textfield.getText()) + "\n");
 				textfield.setText("");
 			});
 			
