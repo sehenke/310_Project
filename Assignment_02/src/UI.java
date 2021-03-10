@@ -43,7 +43,6 @@ public class UI extends Application {
 			send.setOnAction(enter -> {
 				System.out.println(textfield.getText());
 				text.setText(text.getText() + "User: " + textfield.getText() + "\n");
-				System.out.println(textfield.getText());
 				if(textfield.getText().contains("bye".toLowerCase()))
 					System.exit(0);
 				text.setText(text.getText() + "Bot: " + cb.sendPhrase(textfield.getText()) + "\n");
