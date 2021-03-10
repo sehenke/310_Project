@@ -99,7 +99,7 @@ public class ChatBot {
 
     public String dataClean(String phrase){
         String cleanedPhrase=phrase.toLowerCase();
-        cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","");
+        cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
         return cleanedPhrase;
     };
 }
