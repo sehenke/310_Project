@@ -1,4 +1,4 @@
-package application;
+//package application;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -53,6 +53,14 @@ public class ChatBot {
                 ans=search("skills", stringArray);
                 break;
             };
+            if(stringArray[i].equals("training")){
+                ans=search("training", stringArray);
+                break;
+            };
+            if(stringArray[i].equals("certifications")){
+                ans=search("certifications", stringArray);
+                break;
+            };
  
         };
 
@@ -65,7 +73,8 @@ public class ChatBot {
     };
 
     public String search(String keyword, String[] stringArray){
-        String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
+        //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
+        String csvPath="C:\\Users\\Sara\\git\\Assignment_02\\csvs\\" + keyword + ".csv";
         ArrayList<String> data = new ArrayList<String>();
         String row = "";
         boolean breakOut = false;
