@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import edu.stanford.nlp.simple.Document;
+
 public class ChatBot {
     String name;
+    String phrases = "";
     
     public ChatBot(String name){
         this.name = name;
@@ -15,7 +18,7 @@ public class ChatBot {
     public String sendPhrase(String phrase){
         phrase=dataClean(phrase);
         String ans = "";
-        
+        coreference(phrase);
         String[] stringArray = phrase.split(" ");
         
         // Loop to find first keyword
@@ -74,7 +77,7 @@ public class ChatBot {
 
     public String search(String keyword, String[] stringArray){
         //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
-        String csvPath="C:\\Users\\Sara\\git\\Assignment_02\\csvs\\" + keyword + ".csv";
+        String csvPath="C:\\Users\\joels\\Documents\\School\\3rdYear2ndSem\\COSC310\\Assignment_03\\Assignment_02\\csvs\\" + keyword + ".csv";
         ArrayList<String> data = new ArrayList<String>();
         String row = "";
         boolean breakOut = false;
@@ -111,4 +114,13 @@ public class ChatBot {
         cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
         return cleanedPhrase;
     };
+    
+    // coreference function
+    private String coreference(String phrase) {
+    	phrases = phrases + ". " + phrase;
+    	System.out.println(phrases);
+ 	   	Document doc = new Document(phrases);
+ 	   	System.out.println(doc.coref());
+    	return phrase;
+    }
 }

@@ -1,5 +1,4 @@
-package application;
-	
+
 import java.util.Scanner;
 
 import javafx.application.Application;
