@@ -5,12 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.simple.Document;
+import edu.stanford.nlp.util.StringUtils;
 
 public class ChatBot {
     String name;
     String phrases = "";
+    static int counter = 0;
     
     public ChatBot(String name){
         this.name = name;
@@ -18,7 +25,7 @@ public class ChatBot {
     public String sendPhrase(String phrase){
         phrase=dataClean(phrase);
         String ans = "";
-        coreference(phrase);
+        phrase = coreference(phrase);
         String[] stringArray = phrase.split(" ");
         
         // Loop to find first keyword
@@ -117,10 +124,30 @@ public class ChatBot {
     
     // coreference function
     private String coreference(String phrase) {
+    	if(counter>=3) {
+    		phrases = phrases.substring(phrases.indexOf(".",2));
+    	};
+    	counter++;
     	phrases = phrases + ". " + phrase;
     	System.out.println(phrases);
  	   	Document doc = new Document(phrases);
- 	   	System.out.println(doc.coref());
+ 	   	Map<Integer, CorefChain> ar = doc.coref();
+        for (Entry<Integer, CorefChain> me : ar.entrySet()) {
+        	
+            Pattern regex = Pattern.compile("\"([^\"]*)\"");
+            ArrayList<String> allMatches = new ArrayList<String>();
+            Matcher matcher = regex.matcher(me.getValue().toString());
+            while(matcher.find()){
+            	allMatches.add(matcher.group(1));
+            };
+            for (int i = 0; i < allMatches.size(); i++) {
+				if(allMatches.get(i).toString().equals("it")) {
+					phrase = phrase.replace("it", allMatches.get(0).toString());
+				}
+			}
+        }
+        System.out.println(ar.toString());
+        System.out.println(phrase);
     	return phrase;
     }
 }
