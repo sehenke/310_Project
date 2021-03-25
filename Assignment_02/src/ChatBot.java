@@ -128,7 +128,7 @@ public class ChatBot {
 
     
     
-    String NER(String phrase) {
+    List NER(String phrase) {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
@@ -141,6 +141,10 @@ public class ChatBot {
         	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
         	System.out.println(multiWord +" : " +custNERClass);
         }
-        return phrase;
+        if(multiWordsExp.size()>0) {
+        	return multiWordsExp;
+        }
+        else
+        	return null;
     }
 }
