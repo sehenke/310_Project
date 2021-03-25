@@ -1,5 +1,6 @@
 
 
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -222,5 +223,24 @@ public class ChatBot {
     	return phrase;
     }
 
+    List NER(String phrase) {
+
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+        
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+        Annotation annotation = new Annotation(phrase);
+        pipeline.annotate(annotation);
+        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
+        for(CoreMap multiWord: multiWordsExp) {
+        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
+        	System.out.println(multiWord +" : " +custNERClass);
+        }
+        if(multiWordsExp.size()>0) {
+        	return multiWordsExp;
+        }
+        else
+        	return null;
+    }
 }
 
