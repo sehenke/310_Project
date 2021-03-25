@@ -49,7 +49,6 @@ public class ChatBot {
         // Loop to find first keyword
         for(int i = 0; i< taggedData.length; i++){
             // If the first keyword is found call search() to find second keyword
-        	System.out.println(taggedData);
             if(taggedData[i].equals("experience")){
                 ans=search("experience", taggedData);
                 break;
@@ -97,7 +96,7 @@ public class ChatBot {
             	
             	double ratio = handleSpelling(taggedData[i], fields[j]);
             	System.out.println(ratio);
-            	if(ratio > 0.09) {
+            	if(ratio > 0.80) {
             		ans = search(fields[j], taggedData);
             	}
             	
@@ -182,7 +181,6 @@ public class ChatBot {
     	};
     	counter++;
     	phrases = phrases + ". " + phrase;
-    	System.out.println(phrases);
  	   	Document doc = new Document(phrases);
  	   	Map<Integer, CorefChain> ar = doc.coref();
         for (Entry<Integer, CorefChain> me : ar.entrySet()) {
@@ -199,29 +197,34 @@ public class ChatBot {
 				}
 			}
         }
-        System.out.println(ar.toString());
-        System.out.println(phrase);
     	return phrase;
     }
 
-    List NER(String phrase) {
+    String NER(String phrase, String ans) {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
         
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation annotation = new Annotation(phrase);
-        pipeline.annotate(annotation);
-        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
-        for(CoreMap multiWord: multiWordsExp) {
-        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
-        	System.out.println(multiWord +" : " +custNERClass);
+        Annotation annotationPhrase = new Annotation(phrase);
+        Annotation annotationAns = new Annotation(ans);
+        pipeline.annotate(annotationPhrase);
+        pipeline.annotate(annotationAns);
+        List<CoreMap> multiWordsExpPhrase = annotationPhrase.get(MentionsAnnotation.class);
+        List<CoreMap> multiWordsExpAns = annotationAns.get(MentionsAnnotation.class);
+        for(CoreMap multiWordPhrase: multiWordsExpPhrase) {
+        	String custNERClassPhrase = multiWordPhrase.get(NamedEntityTagAnnotation.class);
+        	System.out.println(multiWordPhrase +" : " +custNERClassPhrase);
+        	for(CoreMap multiWordAns: multiWordsExpAns) {
+        		String custNERClassAns = multiWordAns.get(NamedEntityTagAnnotation.class);
+        		System.out.println(multiWordAns +" : " +custNERClassAns);
+        		if(custNERClassAns == custNERClassPhrase) {
+        			ans = ans.replaceAll(multiWordAns.toString(), multiWordPhrase.toString());
+        			
+        		}
+        	}
         }
-        if(multiWordsExp.size()>0) {
-        	return multiWordsExp;
-        }
-        else
-        	return null;
+      return ans;
     }
     
 public static double handleSpelling(String taggedWord, String target) {
