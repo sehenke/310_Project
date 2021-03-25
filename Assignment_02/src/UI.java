@@ -1,10 +1,7 @@
 
 
-//package application;
-	
-import java.util.Scanner;
-
-
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.util.CoreMap;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -56,7 +53,10 @@ public class UI extends Application {
 					text = new Text();
 					text.setWrappingWidth(WIDTH);
 					text.setFill(Color.RED);
-					text.setText("Bot: " + cb.sendPhrase(textfield.getText()));
+					var ans = cb.sendPhrase(textfield.getText());
+					var phrase = textfield.getText();
+					String ner = cb.NER(phrase,ans);
+					text.setText("Bot: " + ner);
 					textbox.getChildren().add(text);
 					textfield.setText("");
 				}
@@ -98,4 +98,3 @@ public class UI extends Application {
 		System.out.println("exit");
 	}
 }
-
