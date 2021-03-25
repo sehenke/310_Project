@@ -104,7 +104,7 @@ public class ChatBot {
             };
         };
 
-      };
+      
 
       //If none of the keywords were found look in the miscellaneous csv for generic questions
       if(ans.length()==0){
@@ -113,10 +113,10 @@ public class ChatBot {
       //If the ansswer is still empty no keywords were found
       return ans.length()!=0?ans:"Can you please rephrase the question?";    
   };
-
+  
   public String search(String keyword, String[] stringArray){
       //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
-      String csvPath="C:\\Users\\Jesse\\Desktop\\Files\\SchoolFiles\\ThirdYear\\Assignment_02\\csvs\\" + keyword + ".csv";
+      String csvPath="C:\\Users\\joels\\Documents\\School\\3rdYear2ndSem\\COSC310\\Assignment_03\\Assignment_02\\csvs\\" + keyword + ".csv";
       ArrayList<String> data = new ArrayList<String>();
       String row = "";
       boolean breakOut = false;
@@ -155,28 +155,7 @@ public class ChatBot {
   };
 
     
-    
-    String NER(String phrase) {
 
-        Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-        
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation annotation = new Annotation(phrase);
-        pipeline.annotate(annotation);
-        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
-        for(CoreMap multiWord: multiWordsExp) {
-        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
-        	System.out.println(multiWord +" : " +custNERClass);
-        }
-        return phrase;
-    }
-
-    public String dataClean(String phrase){
-        String cleanedPhrase=phrase.toLowerCase();
-        cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
-        return cleanedPhrase;
-    };
 
     public ArrayList<String> pos(String text){
 
