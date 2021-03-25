@@ -1,6 +1,3 @@
-
-
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -103,8 +100,8 @@ public class ChatBot {
                 break;
             };
         };
-
-      };
+    
+      
 
       //If none of the keywords were found look in the miscellaneous csv for generic questions
       if(ans.length()==0){
@@ -112,7 +109,7 @@ public class ChatBot {
       }
       //If the ansswer is still empty no keywords were found
       return ans.length()!=0?ans:"Can you please rephrase the question?";    
-  };
+  }
 
   public String search(String keyword, String[] stringArray){
       //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
@@ -156,27 +153,9 @@ public class ChatBot {
 
     
     
-    String NER(String phrase) {
+  
 
-        Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
-        
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation annotation = new Annotation(phrase);
-        pipeline.annotate(annotation);
-        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
-        for(CoreMap multiWord: multiWordsExp) {
-        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
-        	System.out.println(multiWord +" : " +custNERClass);
-        }
-        return phrase;
-    }
-
-    public String dataClean(String phrase){
-        String cleanedPhrase=phrase.toLowerCase();
-        cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
-        return cleanedPhrase;
-    };
+  
 
     public ArrayList<String> pos(String text){
 
@@ -223,24 +202,28 @@ public class ChatBot {
     	return phrase;
     }
 
-    List NER(String phrase) {
+    String NER(String phrase, String ans) {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
         
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation annotation = new Annotation(phrase);
-        pipeline.annotate(annotation);
-        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
-        for(CoreMap multiWord: multiWordsExp) {
-        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
-        	System.out.println(multiWord +" : " +custNERClass);
+        Annotation annotationPhrase = new Annotation(phrase);
+        Annotation annotationAns = new Annotation(phrase);
+        pipeline.annotate(annotationPhrase);
+        pipeline.annotate(annotationAns);
+        List<CoreMap> multiWordsExpPhrase = annotationPhrase.get(MentionsAnnotation.class);
+        List<CoreMap> multiWordsExpAns = annotationAns.get(MentionsAnnotation.class);
+        for(CoreMap multiWordPhrase: multiWordsExpPhrase) {
+        	String custNERClassPhrase = multiWordPhrase.get(NamedEntityTagAnnotation.class);
+        	System.out.println(multiWordPhrase +" : " +custNERClassPhrase);
+        	for(CoreMap multiWordAns: multiWordsExpAns) {
+        		String custNERClassAns = multiWordAns.get(NamedEntityTagAnnotation.class);
+        		if(custNERClassAns == custNERClassPhrase) {
+        			ans = ans.replaceAll(multiWordAns.toString(), multiWordPhrase.toString());
+        		}
+        	}
         }
-        if(multiWordsExp.size()>0) {
-        	return multiWordsExp;
-        }
-        else
-        	return null;
+      return ans;
     }
 }
-
