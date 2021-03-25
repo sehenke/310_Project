@@ -1,0 +1,44 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch CSVtags",
+            "request": "launch",
+            "mainClass": "CSVtags",
+            "projectName": "Assignment_02_a87d2b64"
+        },
+        {
+            "type": "java",
+            "name": "Launch test_POS",
+            "request": "launch",
+            "mainClass": "test_POS",
+            "projectName": "Assignment_02_a87d2b64"
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch UI",
+            "request": "launch",
+            "vmArgs": "--module-path C:/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml",
+            "mainClass": "UI",
+            "projectName": "Assignment_02_a87d2b64"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "vmArgs": "--module-path C:/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml",
+            "mainClass": "application.Main",
+            "projectName": "Assignment_02_a87d2b64"
+        }
+    ]
+}
