@@ -13,26 +13,13 @@ import java.util.regex.Pattern;
 
 import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.simple.Document;
-import edu.stanford.nlp.util.StringUtils;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Properties;
 
-import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.pipeline.*;
 
 
 
-import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.util.CoreMap;
-import edu.stanford.nlp.pipeline.*;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
-import edu.stanford.nlp.ling.CoreAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.MentionsAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -53,7 +40,7 @@ public class ChatBot {
         String ans = "";
         
         String[] stringArray = phrase.split(" ");
-
+        phrase = coreference(phrase);
         // Send phrase to the POS tagger; Returns an ArrayList of possible keywords
         ArrayList<String> list = pos(phrase);
         String[] taggedData = new String[list.size()];
@@ -62,6 +49,7 @@ public class ChatBot {
         // Loop to find first keyword
         for(int i = 0; i< taggedData.length; i++){
             // If the first keyword is found call search() to find second keyword
+        	System.out.println(taggedData);
             if(taggedData[i].equals("experience")){
                 ans=search("experience", taggedData);
                 break;
@@ -102,6 +90,20 @@ public class ChatBot {
                 ans=search("certifications", taggedData);
                 break;
             };
+            // if no match found then check if a spelling error was made
+            // only take error if high confidence we think it means
+            // what we think it means
+            for(int j = 0; j < fields.length; j++) {
+            	
+            	double ratio = handleSpelling(taggedData[i], fields[j]);
+            	System.out.println(ratio);
+            	if(ratio > 0.09) {
+            		ans = search(fields[j], taggedData);
+            	}
+            	
+            	break;
+            	
+            }
         };
 
       
@@ -221,5 +223,80 @@ public class ChatBot {
         else
         	return null;
     }
+    
+public static double handleSpelling(String taggedWord, String target) {
+		
+		String big, small;
+		double bigCount;
+		
+		if(taggedWord.length() < target.length()) {
+			big = target;
+			small = taggedWord;
+		}
+		
+		else {
+			big = taggedWord;
+			small = target;
+		}
+		
+		bigCount = big.length();
+		
+		if(bigCount == 0) {
+			return 1.0;
+		}
+		
+		return (bigCount - dist(big, small)) / bigCount;
+		
+	}
+	
+	public static int dist(String str1, String str2) {
+		
+		int[] cost = new int[str2.length() + 1];
+		
+		for(int i = 0; i <= str1.length(); i ++) {
+			
+			int temp0 = i;
+			
+			for(int j = 0; j <= str2.length(); j ++) {
+				
+				if(i == 0) {
+					cost[j] = j;	
+				}
+				
+				else {
+					
+					if(j > 0) {
+						
+						int temp1 = cost[j - 1];
+						
+						if(str1.charAt(i - 1) != str2.charAt(j - 1)) {
+							temp1 = Math.min(Math.min(temp1, temp0), cost[j]) + 1;
+						}
+						
+						cost[j - 1] = temp0;
+						temp0 = temp1;
+							
+					}
+					
+				}
+				
+			}
+			
+			if(i > 0) {
+				cost[str2.length()] = temp0;
+			}
+			
+		}
+		
+		return cost[str2.length()];
+		
+	}
+	
+	private String[] fields = {
+			
+			"experience", "travel", "goal", "hobby", "school", "volunteer",
+			"salary", "skills", "training", "certifications"
+			
+	};
 }
 
