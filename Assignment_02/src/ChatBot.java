@@ -5,6 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
+
+import edu.stanford.nlp.ling.*;
+import edu.stanford.nlp.pipeline.*;
+
+
 
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.util.CoreMap;
@@ -20,61 +26,67 @@ import java.util.*;
 
 
 public class ChatBot {
-  String name;
-  String phrases;
-  
-  public ChatBot(String name){
-      this.name = name;
-  };
-  public String sendPhrase(String phrase){
-      phrase=dataClean(phrase);
-      String ans = "";
-      
-      String[] stringArray = phrase.split(" ");
-      
-      // Loop to find first keyword
-      for(int i = 0; i< stringArray.length; i++){
-          // If the first keyword is found call search() to find second keyword
-          if(stringArray[i].equals("experience")){
-              ans=search("experience", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("travel")){
-              ans=search("travel", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("goal")){
-              ans=search("goal", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("hobby")){
-              ans=search("hobby", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("school")){
-              ans=search("school", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("volunteer")){
-              ans=search("volunteer", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("salary")){
-              ans=search("salary", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("skills")){
-              ans=search("skills", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("training")){
-              ans=search("training", stringArray);
-              break;
-          };
-          if(stringArray[i].equals("certifications")){
-              ans=search("certifications", stringArray);
-              break;
-          };
+    String name;
+    
+    public ChatBot(String name){
+        this.name = name;
+    };
+    public String sendPhrase(String phrase){
+        phrase=dataClean(phrase);
+
+        String ans = "";
+        
+        String[] stringArray = phrase.split(" ");
+
+        // Send phrase to the POS tagger; Returns an ArrayList of possible keywords
+        ArrayList<String> list = pos(phrase);
+        String[] taggedData = new String[list.size()];
+        taggedData = list.toArray(taggedData);
+
+        // Loop to find first keyword
+        for(int i = 0; i< taggedData.length; i++){
+            // If the first keyword is found call search() to find second keyword
+            if(taggedData[i].equals("experience")){
+                ans=search("experience", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("travel")){
+                ans=search("travel", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("goal")){
+                ans=search("goal", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("hobby")){
+                ans=search("hobby", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("school")){
+                ans=search("school", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("volunteer")){
+                ans=search("volunteer", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("salary")){
+                ans=search("salary", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("skills")){
+                ans=search("skills", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("training")){
+                ans=search("training", taggedData);
+                break;
+            };
+            if(taggedData[i].equals("certifications")){
+                ans=search("certifications", taggedData);
+                break;
+            };
+        };
 
       };
 
@@ -143,4 +155,27 @@ public class ChatBot {
         }
         return phrase;
     }
+
+    public String dataClean(String phrase){
+        String cleanedPhrase=phrase.toLowerCase();
+        cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
+        return cleanedPhrase;
+    };
+
+    public ArrayList<String> pos(String text){
+
+        ArrayList<String> possibleKeywords = new ArrayList<>();
+        Properties property = new Properties();
+        property.setProperty("annotators", "tokenize,ssplit,pos");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(property);
+        CoreDocument document = pipeline.processToCoreDocument(text);
+        for (CoreLabel token : document.tokens()) {
+            //System.out.println(token.word() + "   " + token.tag());
+            if (token.tag().equals("NN") || token.tag().equals("NNS") || token.tag().equals("JJ") || token.tag().equals("JJS") || token.tag().equals("CD") || token.tag().equals("VB") || token.tag().equals("UH") || token.tag().equals("WRB") || token.tag().equals("RB") || token.tag().equals("DT")){
+                possibleKeywords.add(token.word());
+            }
+        }
+        return possibleKeywords;
+    }
+
 }
