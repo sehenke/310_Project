@@ -10,26 +10,13 @@ import java.util.regex.Pattern;
 
 import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.simple.Document;
-import edu.stanford.nlp.util.StringUtils;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Properties;
 
-import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.pipeline.*;
 
 
 
-import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.util.CoreMap;
-import edu.stanford.nlp.pipeline.*;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
-import edu.stanford.nlp.ling.CoreAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.MentionsAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -50,7 +37,7 @@ public class ChatBot {
         String ans = "";
         
         String[] stringArray = phrase.split(" ");
-
+        phrase = coreference(phrase);
         // Send phrase to the POS tagger; Returns an ArrayList of possible keywords
         ArrayList<String> list = pos(phrase);
         String[] taggedData = new String[list.size()];
@@ -99,8 +86,21 @@ public class ChatBot {
                 ans=search("certifications", taggedData);
                 break;
             };
+            // if no match found then check if a spelling error was made
+            // only take error if high confidence we think it means
+            // what we think it means
+            for(int j = 0; j < fields.length; j++) {
+            	
+            	double ratio = handleSpelling(taggedData[i], fields[j]);
+            	System.out.println(ratio);
+            	if(ratio > 0.80) {
+            		ans = search(fields[j], taggedData);
+            	}
+            	
+            	break;
+            	
+            }
         };
-    
       
 
       //If none of the keywords were found look in the miscellaneous csv for generic questions
@@ -109,11 +109,12 @@ public class ChatBot {
       }
       //If the ansswer is still empty no keywords were found
       return ans.length()!=0?ans:"Can you please rephrase the question?";    
-  }
+  };
+  
 
   public String search(String keyword, String[] stringArray){
       //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
-      String csvPath="C:\\Users\\Jesse\\Desktop\\Files\\SchoolFiles\\ThirdYear\\Assignment_02\\csvs\\" + keyword + ".csv";
+      String csvPath="C:\\Users\\joels\\Documents\\School\\3rdYear2ndSem\\COSC310\\Assignment_03\\Assignment_02\\csvs\\" + keyword + ".csv";
       ArrayList<String> data = new ArrayList<String>();
       String row = "";
       boolean breakOut = false;
@@ -152,10 +153,6 @@ public class ChatBot {
   };
 
     
-    
-  
-
-  
 
     public ArrayList<String> pos(String text){
 
@@ -180,7 +177,6 @@ public class ChatBot {
     	};
     	counter++;
     	phrases = phrases + ". " + phrase;
-    	System.out.println(phrases);
  	   	Document doc = new Document(phrases);
  	   	Map<Integer, CorefChain> ar = doc.coref();
         for (Entry<Integer, CorefChain> me : ar.entrySet()) {
@@ -197,28 +193,108 @@ public class ChatBot {
 				}
 			}
         }
-        System.out.println(ar.toString());
-        System.out.println(phrase);
     	return phrase;
     }
 
-    List NER(String phrase) {
+    String NER(String phrase, String ans) {
 
         Properties props = new Properties();
         props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
         
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-        Annotation annotation = new Annotation(phrase);
-        pipeline.annotate(annotation);
-        List<CoreMap> multiWordsExp = annotation.get(MentionsAnnotation.class);
-        for(CoreMap multiWord: multiWordsExp) {
-        	String custNERClass = multiWord.get(NamedEntityTagAnnotation.class);
-        	System.out.println(multiWord +" : " +custNERClass);
+        Annotation annotationPhrase = new Annotation(phrase);
+        Annotation annotationAns = new Annotation(ans);
+        pipeline.annotate(annotationPhrase);
+        pipeline.annotate(annotationAns);
+        List<CoreMap> multiWordsExpPhrase = annotationPhrase.get(MentionsAnnotation.class);
+        List<CoreMap> multiWordsExpAns = annotationAns.get(MentionsAnnotation.class);
+        for(CoreMap multiWordPhrase: multiWordsExpPhrase) {
+        	String custNERClassPhrase = multiWordPhrase.get(NamedEntityTagAnnotation.class);
+        	System.out.println(multiWordPhrase +" : " +custNERClassPhrase);
+        	for(CoreMap multiWordAns: multiWordsExpAns) {
+        		String custNERClassAns = multiWordAns.get(NamedEntityTagAnnotation.class);
+        		System.out.println(multiWordAns +" : " +custNERClassAns);
+        		if(custNERClassAns == custNERClassPhrase) {
+        			ans = ans.replaceAll(multiWordAns.toString(), multiWordPhrase.toString());
+        			
+        		}
+        	}
         }
-        if(multiWordsExp.size()>0) {
-        	return multiWordsExp;
-        }
-        else
-        	return null;
+      return ans;
     }
+    
+public static double handleSpelling(String taggedWord, String target) {
+		
+		String big, small;
+		double bigCount;
+		
+		if(taggedWord.length() < target.length()) {
+			big = target;
+			small = taggedWord;
+		}
+		
+		else {
+			big = taggedWord;
+			small = target;
+		}
+		
+		bigCount = big.length();
+		
+		if(bigCount == 0) {
+			return 1.0;
+		}
+		
+		return (bigCount - dist(big, small)) / bigCount;
+		
+	}
+	
+	public static int dist(String str1, String str2) {
+		
+		int[] cost = new int[str2.length() + 1];
+		
+		for(int i = 0; i <= str1.length(); i ++) {
+			
+			int temp0 = i;
+			
+			for(int j = 0; j <= str2.length(); j ++) {
+				
+				if(i == 0) {
+					cost[j] = j;	
+				}
+				
+				else {
+					
+					if(j > 0) {
+						
+						int temp1 = cost[j - 1];
+						
+						if(str1.charAt(i - 1) != str2.charAt(j - 1)) {
+							temp1 = Math.min(Math.min(temp1, temp0), cost[j]) + 1;
+						}
+						
+						cost[j - 1] = temp0;
+						temp0 = temp1;
+							
+					}
+					
+				}
+				
+			}
+			
+			if(i > 0) {
+				cost[str2.length()] = temp0;
+			}
+			
+		}
+		
+		return cost[str2.length()];
+		
+	}
+	
+	private String[] fields = {
+			
+			"experience", "travel", "goal", "hobby", "school", "volunteer",
+			"salary", "skills", "training", "certifications"
+			
+	};
 }

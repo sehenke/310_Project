@@ -1,7 +1,8 @@
 
 
 //package application;
-	
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.util.CoreMap;
 import java.util.Scanner;
 
 
@@ -56,7 +57,11 @@ public class UI extends Application {
 					text = new Text();
 					text.setWrappingWidth(WIDTH);
 					text.setFill(Color.RED);
-					text.setText("Bot: " + cb.sendPhrase(textfield.getText()));
+					var ans = cb.sendPhrase(textfield.getText());
+					var phrase = textfield.getText();
+					String ner = cb.NER(phrase,ans);
+					text.setText("Bot: " + ner);
+					//text.setText("Bot: " + cb.sendPhrase(textfield.getText()));
 					textbox.getChildren().add(text);
 					textfield.setText("");
 				}
