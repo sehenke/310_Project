@@ -19,6 +19,9 @@ VSCode:
 * Edit run configuration within launch.json by adding:
 `"vmArgs": "--module-path {Your path}/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml", ` 
 
+Eclipse:
+* Follow this tutorial: https://www.youtube.com/watch?v=bC4XB6JAaoU
+
 ### CoreNLP
 After setting up JavaFX. The next step is to properly reference the Stanford CoreNLP jars.
 
