@@ -14,3 +14,7 @@ VSCode:
 * Reference all jar files within JavaFX SDK to the Java project.
 * Edit run configuration within launch.json by adding:
 `"vmArgs": "--module-path {Your path}/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml", ` 
+
+The next step is to properly reference the Stanford CoreNLP jars:
+* Download the CoreNLP zip file from: https://stanfordnlp.github.io/CoreNLP/ and extract
+* Reference all of the jars to the class path of the Java project
