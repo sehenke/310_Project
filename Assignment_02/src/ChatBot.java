@@ -1,6 +1,3 @@
-
-
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -104,7 +101,6 @@ public class ChatBot {
             	
             }
         };
-
       
 
       //If none of the keywords were found look in the miscellaneous csv for generic questions
@@ -115,6 +111,7 @@ public class ChatBot {
       return ans.length()!=0?ans:"Can you please rephrase the question?";    
   };
   
+
   public String search(String keyword, String[] stringArray){
       //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
       String csvPath="C:\\Users\\joels\\Documents\\School\\3rdYear2ndSem\\COSC310\\Assignment_03\\Assignment_02\\csvs\\" + keyword + ".csv";
@@ -156,7 +153,6 @@ public class ChatBot {
   };
 
     
-
 
     public ArrayList<String> pos(String text){
 
@@ -302,4 +298,3 @@ public static double handleSpelling(String taggedWord, String target) {
 			
 	};
 }
-
