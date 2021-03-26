@@ -1,6 +1,6 @@
 # Assignment_02
 
-For our project, which will be done in Java, the user will take on the role of an interviewer and the agent will take on the role of an interviewee for a software engineering job. The user will prompt the agent by asking questions related to their history, experience, etc. and the agent will respond with a relevant answer.
+For our project, which has been done in Java, the user takes on the role of an interviewer and the agent takes on the role of an interviewee for a software engineering job. The user prompts the agent by asking questions related to their history, experience, etc. and the agent responds with a relevant answer. The software we developed utilizes Named Entity Recognition, Coreference Resolution, SpellCheck and POS Tagging to identify various structures within user input phrases to respond appropriately. The software utilizes a minimalistic User Interface which allows users to easily enter interview-based phrases and receive responses that are cohesive to an interviewee.
 
 ## Compiling and Running
 
