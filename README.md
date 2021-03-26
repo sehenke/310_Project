@@ -4,7 +4,11 @@ For our project, which has been done in Java, the user takes on the role of an i
 
 ## Compiling and Running
 
-After getting all of the files from the GitHub repository the CSVs location must be changed. This can either be absolute or relative and is found within ChatBot.java in the search function. After this JavaFX must be installed onto the machine. 
+### CSV Path Change
+After getting all of the files from the GitHub repository the CSVs location must be changed. This can either be absolute or relative and is found within ChatBot.java in the search function. 
+
+### JavaFX
+After this JavaFX must be installed onto the machine. 
 
 VSCode:
 * Update VSCode to 1.49.3 or above.
@@ -15,6 +19,10 @@ VSCode:
 * Edit run configuration within launch.json by adding:
 `"vmArgs": "--module-path {Your path}/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml", ` 
 
-The next step is to properly reference the Stanford CoreNLP jars:
+### CoreNLP
+After setting up JavaFX. The next step is to properly reference the Stanford CoreNLP jars.
+
+Generalized method:
 * Download the CoreNLP zip file from: https://stanfordnlp.github.io/CoreNLP/ and extract
 * Reference all of the jars to the class path of the Java project
+
