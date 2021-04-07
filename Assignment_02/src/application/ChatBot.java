@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+/*
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -23,6 +25,7 @@ import edu.stanford.nlp.ling.CoreAnnotations.MentionsAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import java.util.*;
+*/
 
 
 public class ChatBot {
@@ -39,11 +42,15 @@ public class ChatBot {
         String ans = "";
         
         String[] stringArray = phrase.split(" ");
+        
+        /*
         phrase = coreference(phrase);
         // Send phrase to the POS tagger; Returns an ArrayList of possible keywords
         ArrayList<String> list = pos(phrase);
         String[] taggedData = new String[list.size()];
         taggedData = list.toArray(taggedData);
+        */
+        String[] taggedData = stringArray;
 
         // Loop to find first keyword
         for(int i = 0; i< taggedData.length; i++){
@@ -91,6 +98,8 @@ public class ChatBot {
             // if no match found then check if a spelling error was made
             // only take error if high confidence we think it means
             // what we think it means
+            
+            /*
             for(int j = 0; j < fields.length; j++) {
             	
             	double ratio = handleSpelling(taggedData[i], fields[j]);
@@ -102,6 +111,7 @@ public class ChatBot {
             	break;
             	
             }
+            */
         };
       
 
@@ -115,8 +125,7 @@ public class ChatBot {
   
 
   	public String search(String keyword, String[] stringArray){
-      //String csvPath="C:\\Users\\Brandon\\Desktop\\csvs\\" + keyword + ".csv";
-      String csvPath="C:\\Users\\mitch\\Desktop\\School\\UBC Okanagan\\COSC 310\\A3\\csvs\\" + keyword + ".csv";
+      String csvPath="C:\\Users\\Sara\\git\\310_Project\\csvs\\" + keyword + ".csv";
       ArrayList<String> data = new ArrayList<String>();
       String row = "";
       boolean breakOut = false;
@@ -155,6 +164,7 @@ public class ChatBot {
   	};
 
     
+  	/*
 
     public ArrayList<String> pos(String text){
 
@@ -299,4 +309,5 @@ public class ChatBot {
 			"salary", "skills", "training", "certifications"
 			
 	};
+	*/
 }
