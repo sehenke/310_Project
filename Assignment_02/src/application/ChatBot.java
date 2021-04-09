@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 /*
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,6 +28,8 @@ import edu.stanford.nlp.ling.CoreLabel;
 import java.util.*;
 */
 
+import com.google.cloud.translate.*;
+import com.google.cloud.translate.Translate.TranslateOption;
 
 public class ChatBot {
     String name;
@@ -37,11 +40,16 @@ public class ChatBot {
         this.name = name;
     };
     public String sendPhrase(String phrase){
-        phrase=dataClean(phrase);
 
+        Translate translate = TranslateOptions.getDefaultInstance().getService();
+        Translation translation = translate.translate(phrase);
+        String translated = translation.getTranslatedText();
+        System.out.println("Question: " + translated);
+        String sourcelang = translation.getSourceLanguage();
+
+        translated=dataClean(translated);
         String ans = "";
-        
-        String[] stringArray = phrase.split(" ");
+        String[] stringArray = translated.split(" ");
         
         /*
         phrase = coreference(phrase);
@@ -56,43 +64,43 @@ public class ChatBot {
         for(int i = 0; i< taggedData.length; i++){
             // If the first keyword is found call search() to find second keyword
             if(taggedData[i].equals("experience")){
-                ans=search("experience", taggedData);
+                ans=search("experience", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("travel")){
-                ans=search("travel", taggedData);
+                ans=search("travel", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("goal")){
-                ans=search("goal", taggedData);
+                ans=search("goal", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("hobby")){
-                ans=search("hobby", taggedData);
+                ans=search("hobby", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("school")){
-                ans=search("school", taggedData);
+                ans=search("school", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("volunteer")){
-                ans=search("volunteer", taggedData);
+                ans=search("volunteer", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("salary")){
-                ans=search("salary", taggedData);
+                ans=search("salary", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("skills")){
-                ans=search("skills", taggedData);
+                ans=search("skills", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("training")){
-                ans=search("training", taggedData);
+                ans=search("training", taggedData, translate, sourcelang);
                 break;
             };
             if(taggedData[i].equals("certifications")){
-                ans=search("certifications", taggedData);
+                ans=search("certifications", taggedData, translate, sourcelang);
                 break;
             };
             // if no match found then check if a spelling error was made
@@ -113,18 +121,22 @@ public class ChatBot {
             }
             */
         };
+        
+
+        
+
       
 
       //If none of the keywords were found look in the miscellaneous csv for generic questions
         if(ans.length()==0){
-        	ans=search("miscellaneous", stringArray);
+        	ans=search("miscellaneous", stringArray, translate, sourcelang);
         }
       //If the ansswer is still empty no keywords were found
         return ans.length()!=0?ans:"Can you please rephrase the question?";    
     };
   
 
-  	public String search(String keyword, String[] stringArray){
+  	public String search(String keyword, String[] stringArray, Translate translate, String sourcelang){
       String csvPath="C:\\Users\\Sara\\git\\310_Project\\csvs\\" + keyword + ".csv";
       ArrayList<String> data = new ArrayList<String>();
       String row = "";
@@ -154,6 +166,16 @@ public class ChatBot {
           if(j==stringArray.length-1)
               ans = "Could you be a little more specific please?";
       }
+      
+      System.out.println("Answer: " + ans);
+      TranslateOption base = Translate.TranslateOption.sourceLanguage("en");
+      TranslateOption src = Translate.TranslateOption.targetLanguage(sourcelang);
+      if (!(sourcelang.equals("en"))) {
+          Translation translationback = translate.translate(ans, base, src); // (text, language of text, language we want to translate to)
+          //System.out.printf("Translated Text:\n\t%s\n", translation.getTranslatedText());
+          ans = translationback.getTranslatedText();
+      }
+      
       return ans;
   }
 
