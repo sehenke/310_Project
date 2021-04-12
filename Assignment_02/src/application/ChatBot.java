@@ -31,6 +31,8 @@ import java.util.*;
 import com.google.cloud.translate.*;
 import com.google.cloud.translate.Translate.TranslateOption;
 
+import jwikistarter.Wikipedia;
+
 public class ChatBot {
     String name;
     String phrases = "";
@@ -64,43 +66,43 @@ public class ChatBot {
         for(int i = 0; i< taggedData.length; i++){
             // If the first keyword is found call search() to find second keyword
             if(taggedData[i].equals("experience")){
-                ans=search("experience", taggedData, translate, sourcelang);
+                ans=search("experience", taggedData);
                 break;
             };
             if(taggedData[i].equals("travel")){
-                ans=search("travel", taggedData, translate, sourcelang);
+                ans=search("travel", taggedData);
                 break;
             };
             if(taggedData[i].equals("goal")){
-                ans=search("goal", taggedData, translate, sourcelang);
+                ans=search("goal", taggedData);
                 break;
             };
             if(taggedData[i].equals("hobby")){
-                ans=search("hobby", taggedData, translate, sourcelang);
+                ans=search("hobby", taggedData);
                 break;
             };
             if(taggedData[i].equals("school")){
-                ans=search("school", taggedData, translate, sourcelang);
+                ans=search("school", taggedData);
                 break;
             };
             if(taggedData[i].equals("volunteer")){
-                ans=search("volunteer", taggedData, translate, sourcelang);
+                ans=search("volunteer", taggedData);
                 break;
             };
             if(taggedData[i].equals("salary")){
-                ans=search("salary", taggedData, translate, sourcelang);
+                ans=search("salary", taggedData);
                 break;
             };
             if(taggedData[i].equals("skills")){
-                ans=search("skills", taggedData, translate, sourcelang);
+                ans=search("skills", taggedData);
                 break;
             };
             if(taggedData[i].equals("training")){
-                ans=search("training", taggedData, translate, sourcelang);
+                ans=search("training", taggedData);
                 break;
             };
             if(taggedData[i].equals("certifications")){
-                ans=search("certifications", taggedData, translate, sourcelang);
+                ans=search("certifications", taggedData);
                 break;
             };
             // if no match found then check if a spelling error was made
@@ -122,21 +124,28 @@ public class ChatBot {
             */
         };
         
-
-        
-
-      
-
       //If none of the keywords were found look in the miscellaneous csv for generic questions
         if(ans.length()==0){
-        	ans=search("miscellaneous", stringArray, translate, sourcelang);
+        	ans=search("miscellaneous", stringArray);
         }
+        
+        if(ans.length()==0) {
+        	ans = searchWiki(stringArray);
+        }
+        
       //If the ansswer is still empty no keywords were found
-        return ans.length()!=0?ans:"Can you please rephrase the question?";    
+        if(ans.length()==0) {
+        	ans= "Can you please rephrase the question?";
+        }
+        
+        System.out.println("Answer: " + ans);
+        ans = translate(ans, translate, sourcelang);
+        
+        return ans;    
     };
   
 
-  	public String search(String keyword, String[] stringArray, Translate translate, String sourcelang){
+  	public String search(String keyword, String[] stringArray){
       String csvPath="C:\\Users\\Sara\\git\\310_Project\\csvs\\" + keyword + ".csv";
       ArrayList<String> data = new ArrayList<String>();
       String row = "";
@@ -163,17 +172,9 @@ public class ChatBot {
           }
           if(breakOut==true)
               break;
-          if(j==stringArray.length-1)
-              ans = "Could you be a little more specific please?";
-      }
-      
-      System.out.println("Answer: " + ans);
-      TranslateOption base = Translate.TranslateOption.sourceLanguage("en");
-      TranslateOption src = Translate.TranslateOption.targetLanguage(sourcelang);
-      if (!(sourcelang.equals("en"))) {
-          Translation translationback = translate.translate(ans, base, src); // (text, language of text, language we want to translate to)
-          //System.out.printf("Translated Text:\n\t%s\n", translation.getTranslatedText());
-          ans = translationback.getTranslatedText();
+          if(j==stringArray.length-1) {
+              //ans = "Could you be a little more specific please?";
+          }
       }
       
       return ans;
@@ -184,6 +185,62 @@ public class ChatBot {
       cleanedPhrase=cleanedPhrase.replace("?","").replace(".","").replace(",","").replace("!","");
       return cleanedPhrase;
   	};
+  	
+  	public String searchWiki(String[] stringArray) {
+  		
+  		String ans = "";
+        // "What do you know about [...]" --> [...] is search term to look for
+        int wordmatch = 0;
+        for (int x = 0; x < stringArray.length; x++) {
+        	if (stringArray[x].equals("what") || stringArray[x].equals("do") || stringArray[x].equals("you") || stringArray[x].equals("know") || stringArray[x].equals("about")) {
+        		wordmatch++;
+        	}
+        }
+        
+        if (wordmatch == 5) {
+        	boolean first = true;
+            String searchterm = "";
+        	for (int x = 5; x < stringArray.length; x++) {
+        		if (first) {
+        			searchterm = stringArray[x];
+        			first = false;
+        		}else {
+        			searchterm = searchterm + " " + stringArray[x];
+        		}
+        	}
+        	System.out.println("Searching Wikipedia for: "+ searchterm);
+            Wikipedia wiki = new Wikipedia();
+            String results = wiki.searchWiki(searchterm);
+			
+            //System.out.println(results);
+			String[] answer = results.split("\\.");
+			
+			first = true;
+			for (int x = 0; x < 3; x++) {
+        		if (first) {
+        			ans = answer[x] + "\\.";
+        			first = false;
+        		}else {
+        			ans = ans + answer[x] + "\\.";
+        		}
+        	}
+			
+			ans = ans.replace("\\", "");
+            //System.out.println(wiki.searchWiki("Bird"));
+        }
+        return ans;
+  	}
+  	
+  	public String translate(String ans, Translate translate, String sourcelang) {
+        TranslateOption base = Translate.TranslateOption.sourceLanguage("en");
+        TranslateOption src = Translate.TranslateOption.targetLanguage(sourcelang);
+        if (!(sourcelang.equals("en"))) {
+            Translation translationback = translate.translate(ans, base, src); // (text, language of text, language we want to translate to)
+            //System.out.printf("Translated Text:\n\t%s\n", translation.getTranslatedText());
+            ans = translationback.getTranslatedText();
+        }
+        return ans;
+  	}
 
     
   	/*
