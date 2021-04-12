@@ -1,8 +1,10 @@
-# Assignment_03
+# Individual Project
 
-For our project, which has been done in Java, the user takes on the role of an interviewer and the agent takes on the role of an interviewee for a software engineering job. The user prompts the agent by asking questions related to their history, experience, etc. and the agent responds with a relevant answer. The software we developed utilizes Named Entity Recognition, Coreference Resolution, SpellCheck and POS Tagging to identify various structures within user input phrases to respond appropriately. The software utilizes a minimalistic User Interface which allows users to easily enter interview-based phrases and receive responses that are cohesive to an interviewee.
+For the COSC 310 Project, which has been done in Java, the user takes on the role of an interviewer and the agent takes on the role of an interviewee for a software engineering job. The user prompts the agent by asking questions related to their history, experience, etc. and the agent responds with a relevant answer. The software we developed utilizes Named Entity Recognition, Coreference Resolution, SpellCheck and POS Tagging to identify various structures within user input phrases to respond appropriately. The software utilizes a minimalistic User Interface which allows users to easily enter interview-based phrases and receive responses that are cohesive to an interviewee. In the individual project section, the Google Translate API and Wikipedia API were included to enhance the abilites of the chatbot and improve conversation.
 
 ## Added Features
+
+## A3 Features
 
 ### Misspelled Word matcher
 If a potential keyword doesn’t match any known keywords, then the program will try to match it against known words. If the misspelled word nearly matches a keyword, the program will recognise it as the keyword.
